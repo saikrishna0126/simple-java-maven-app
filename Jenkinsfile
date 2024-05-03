@@ -23,7 +23,7 @@ pipeline {
                 bat 'mvn clean package'
                 
                 // Archive artifacts
-                archiveArtifacts 'target/*.war'
+                archiveArtifacts 'target/*.jar'
                 
                 // Sonar analysis
                 withSonarQubeEnv(credentialsId: 'sonar-scanner', installationName: 'sonarqube') {
@@ -48,7 +48,7 @@ pipeline {
                             print "Pipeline Executed successfully: ${qg.status}"
                             
                             // Deploy to Tomcat if quality gate passes
-                            deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://34.27.27.61:8080')], contextPath: null, war: '**/*.war'
+                            deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://34.27.27.61:8080')], contextPath: null, jar: '**/*.jar'
                         }
                     }
                 }
