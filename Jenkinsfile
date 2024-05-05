@@ -19,33 +19,23 @@ pipeline {
         stage('Sonar Analysis and Deploy to Tomcat') {
             steps {
                 // Sonar code quality check
-                bat 'mvn clean install'
+                bat 'mvn clean package'
                 
                 // Archive artifacts
                 archiveArtifacts 'target/*.war'
                 
                 // Sonar analysis
-                withSonarQubeEnv(credentialsId: 'sonar-scanner', installationName: 'sonarqube') {
-                    bat """
-                    %SONAR_SCANNER% ^
-                    -Dsonar.projectKey=%SONAR_PROJECTKEY% ^
-                    -Dsonar.sources=%SONAR_SOURCE% ^
-                    -Dsonar.host.url=%SONAR_URL% ^
-                    -Dsonar.login=%SONAR_TOKEN% ^
-                    -Dsonar.java.binaries=target/classes 
-                    """
-                }
+                bat """
+                %SONAR_SCANNER% ^
+                -Dsonar.projectKey=%SONAR_PROJECTKEY% ^
+                -Dsonar.sources=%SONAR_SOURCE% ^
+                -Dsonar.host.url=%SONAR_URL% ^
+                -Dsonar.login=%SONAR_TOKEN% ^
+                -Dsonar.java.binaries=target/classes 
+                """
                 
-                // Check if WAR file exists
-                script {
-                    def warFile = findFiles(glob: 'target/*.war').first()
-                    if (warFile != null) {
-                        // Deploy to Tomcat if WAR file exists
-                        deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://34.27.27.61:8080')], contextPath: null, war: warFile.name
-                    } else {
-                        error "No WAR file found in target directory. Build failed."
-                    }
-                }
+                // Deploy to Tomcat
+                deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://34.27.27.61:8080')], contextPath: null, war: '**/*.war'
             }
         }
     }
