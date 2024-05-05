@@ -19,7 +19,7 @@ pipeline {
         stage('Sonar Analysis and Deploy to Tomcat') {
             steps {
                 // Sonar code quality check
-                bat 'mvn clean package'
+                bat 'mvn clean install'
                 
                 // Archive artifacts
                 archiveArtifacts 'target/*.war'
