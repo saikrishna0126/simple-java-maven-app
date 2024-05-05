@@ -22,7 +22,7 @@ pipeline {
                 bat 'mvn clean install'
                 
                 // Archive artifacts
-                archiveArtifacts 'target/*.war'
+                archiveArtifacts 'webapp/example.war'
                 
                 // Sonar analysis
                 bat """
